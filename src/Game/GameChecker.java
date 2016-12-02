@@ -143,37 +143,17 @@ public class GameChecker {
     private static boolean checkPlane(Cards cards) {
         if (cards.count >= 6) {
             int planeCount = 0;
-            int flag = 0;   // 1代表飞机在前面，2代表飞机在后面
-            // 从前往后
             for (int i=0; i<=cards.count-3; i=i+3) {
                 if (cards.get(i).number == cards.get(i+1).number &&
                         cards.get(i).number == cards.get(i+2).number) {
                     planeCount++;
-                    flag = 1;
                 } else {
                     break;
                 }
             }
-            // 从后往前
-            if (planeCount == 0) {
-                for (int i=cards.count-1; i>=2; i=i-3) {
-                    if (cards.get(i).number == cards.get(i-1).number &&
-                            cards.get(i).number == cards.get(i-2).number) {
-                        planeCount++;
-                        flag = 2;
-                    } else {
-                        break;
-                    }
-                }
-            }
             // 判断飞机带的牌是否符合要求
             if (planeCount > 0) {
-                int index;
-                if (flag == 1) {
-                    index = planeCount * 3;
-                } else {
-                    index = 0;
-                }
+                int index = planeCount * 3;
                 if (cards.count == planeCount * 3) {
                     // 不带牌
                     cards.type = TypePlane;
@@ -199,33 +179,22 @@ public class GameChecker {
 
     private static boolean checkFour(Cards cards) {
         if (cards.count == 6 || cards.count == 8) {
-            int flag = 0;   // 1代表四张在前面，2代表四张在后面
             if (cards.get(0).number == cards.get(1).number &&
                     cards.get(0).number == cards.get(2).number &&
                     cards.get(0).number == cards.get(3).number) {
-                flag = 1;
-            } else if (cards.get(cards.count-1).number == cards.get(cards.count-2).number &&
-                        cards.get(cards.count-1).number == cards.get(cards.count-3).number &&
-                        cards.get(cards.count-1).number == cards.get(cards.count-4).number) {
-                flag = 2;
-            } else {
-                return false;
-            }
-            int index;
-            if (flag == 1) {
-                index = 4;
-            } else {
-                index = 0;
-            }
-            if (cards.count == 6) {
-                cards.type = TypeFour;
-                return true;
-            } else if (cards.count == 8) {
-                if (cards.get(index).number == cards.get(index+1).number &&
-                        cards.get(index+2).number == cards.get(index+3).number) {
+                int index = 4;
+                if (cards.count == 6) {
                     cards.type = TypeFour;
                     return true;
+                } else if (cards.count == 8) {
+                    if (cards.get(index).number == cards.get(index+1).number &&
+                            cards.get(index+2).number == cards.get(index+3).number) {
+                        cards.type = TypeFour;
+                        return true;
+                    }
                 }
+            } else {
+                return false;
             }
         }
         return false;
@@ -236,32 +205,23 @@ public class GameChecker {
             int flag = 0;   // 1代表飞机在前面，2代表飞机在后面
             if (cards.get(0).number == cards.get(1).number &&
                     cards.get(0).number == cards.get(2).number) {
-                flag = 1;
-            } else if (cards.get(cards.count-1).number == cards.get(cards.count-2).number &&
-                    cards.get(cards.count-1).number == cards.get(cards.count-3).number) {
-                flag = 2;
-            } else {
-                return false;
-            }
-            int index;
-            if (flag == 1) {
-                index = 3;
-            } else {
-                index = 0;
-            }
-            if (cards.count == 3) {
-                cards.type = TypeThree;
-                return true;
-            } else if (cards.count == 4){
-                cards.type = TypeThree;
-                return true;
-            } else {
-                if (cards.get(index).number == cards.get(index+1).number) {
+                int index = 3;
+                if (cards.count == 3) {
+                    cards.type = TypeThree;
+                    return true;
+                } else if (cards.count == 4){
                     cards.type = TypeThree;
                     return true;
                 } else {
-                    return false;
+                    if (cards.get(index).number == cards.get(index+1).number) {
+                        cards.type = TypeThree;
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
+            } else {
+                return false;
             }
         }
         return false;
