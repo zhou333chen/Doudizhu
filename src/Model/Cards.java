@@ -11,6 +11,18 @@ import java.util.List;
  */
 
 public class Cards {
+    public final static int TypeNormal = 0;     // 手牌
+    public final static int TypeKingBomb = 1;   // 王炸
+    public final static int TypeNormalBomb = 2; // 普通炸弹
+    public final static int TypeStraight = 3;   // 顺子
+    public final static int TypeCompany = 4;    // 连队
+    public final static int TypePlane = 5;      // 飞机
+    public final static int TypeFour = 6;       // 四带二
+    public final static int TypeThree = 7;      // 三带
+    public final static int TypeDouble = 8;     // 对子
+    public final static int TypeSingle = 9;     // 单张
+    public final static int TypeIllegal = 10;   // 不合法的牌
+
     private ArrayList<Card> cardList;
     public int type;
     public int count;
