@@ -15,8 +15,20 @@ public class GameChecker {
     }
 
     public static boolean compare(Cards lastCards, Cards currentCards) {
-
-        return false;
+        if (lastCards == null && currentCards.count > 0) {
+            return true;
+        }
+        if (currentCards.type == TypeKingBomb) {
+            return true;
+        } else if (lastCards.type == currentCards.type){
+            if (lastCards.count > 0 && currentCards.count > 0) {
+                return currentCards.get(0).number > lastCards.get(0).number;
+            } else {
+                return false;
+            }
+        } else{
+            return false;
+        }
     }
 
     private static void analyse(Cards cards) {

@@ -43,7 +43,7 @@ public class GameManager implements Gamer.GamerListener{
         }
         Collections.shuffle(cards);
         // 随机产生叫地主的人
-        currentGamerIndex = 0;//(int)(Math.random() * 3);
+        currentGamerIndex = (int)(Math.random() * 3);
         currentGamer = gamers.get(currentGamerIndex);
         // 发票
         for (int i=0; i<3; i++) {
@@ -144,8 +144,8 @@ public class GameManager implements Gamer.GamerListener{
                     currentGamer.cards.removeAllCards(currentPlayCards);
                 } else {
                     currentGamer.notifyInfo(ILLEGAL_OPERATION + "|" + currentGamer.user.userId);
+                    return;
                 }
-                return;
             }
         }
         // 群发消息
@@ -155,6 +155,8 @@ public class GameManager implements Gamer.GamerListener{
             lastPlayCards.removeAllCards();
         }
         lastPlayCards.addCards(currentPlayCards);
+        lastPlayCards.type = currentPlayCards.type;
+
         for (Gamer gamer : gamers) {
             gamer.notifyInfo(str);
         }
