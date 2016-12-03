@@ -6,6 +6,7 @@ import Model.Cards;
 import java.util.*;
 
 import static Game.GameOperation.*;
+import static Model.Cards.TypeIllegal;
 
 /**
  * Created by jintiandalegehu on 2016/11/27.
@@ -138,12 +139,12 @@ public class GameManager implements Gamer.GamerListener{
                     return;
                 }
                 // 检查出牌是否合理
-                if (lastPlayGamer != null && currentGamer != lastPlayGamer && !GameChecker.check(lastPlayCards, currentPlayCards)) {
+                GameChecker.check(currentPlayCards);
+                if (currentPlayCards.type != TypeIllegal && GameChecker.compare(lastPlayCards, currentPlayCards)) {
+                    currentGamer.cards.removeAllCards(currentPlayCards);
+                } else {
                     currentGamer.notifyInfo(ILLEGAL_OPERATION + "|" + currentGamer.user.userId);
-                    return;
                 }
-                // 更新手牌
-                currentGamer.cards.removeAllCards(currentPlayCards);
                 return;
             }
         }

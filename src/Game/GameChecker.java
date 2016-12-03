@@ -10,9 +10,11 @@ import static Model.Cards.*;
  */
 public class GameChecker {
 
-    public static boolean check(Cards lastCards, Cards currentCards) {
-        analyse(lastCards);
-        analyse(currentCards);
+    public static void check(Cards cards) {
+        analyse(cards);
+    }
+
+    public static boolean compare(Cards lastCards, Cards currentCards) {
 
         return false;
     }
@@ -21,7 +23,6 @@ public class GameChecker {
         if (cards == null) {
             return;
         }
-        cards.sort();
         for (int i=0; i<cards.count; i++) {
             Card card = cards.get(i);
             if (card.number < 53) {
@@ -189,7 +190,6 @@ public class GameChecker {
 
     private static boolean checkThree(Cards cards) {
         if (cards.count >= 3 && cards.count <=5) {
-            int flag = 0;   // 1代表飞机在前面，2代表飞机在后面
             if (cards.get(0).number == cards.get(1).number &&
                     cards.get(0).number == cards.get(2).number) {
                 int index = 3;
