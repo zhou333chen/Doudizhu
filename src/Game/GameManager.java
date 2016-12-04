@@ -12,13 +12,14 @@ import static Model.Cards.TypeIllegal;
  * Created by jintiandalegehu on 2016/11/27.
  */
 public class GameManager implements Gamer.GamerListener{
-    ArrayList<Gamer> gamers = new ArrayList<>(3);
+    public ArrayList<Gamer> gamers = new ArrayList<>(3);
     ArrayList<Card> cards;
     Cards lastPlayCards;
     Cards currentPlayCards = new Cards();
     Gamer lastPlayGamer;    // 上一个出牌的人
     Gamer currentGamer;
     int currentGamerIndex;
+    int passCount;
 
     public void addGamer(Gamer gamer) {
         gamers.add(gamer);
@@ -65,19 +66,7 @@ public class GameManager implements Gamer.GamerListener{
         }
 
         if (currentGamer.isAuto) {
-            Timer timer1 = new Timer();
-            timer1.schedule(new TimerTask() {
-                public void run() {
-                    handleConfirmLandlord(generateConfirm(currentGamer));
-                }
-            }, 3000);
-
-            Timer timer2 = new Timer();
-            timer2.schedule(new TimerTask() {
-                public void run() {
-                    handlePlayCard(generatePlayCard(currentGamer, currentGamer.cards.subCards(0, 1)));
-                }
-            }, 6000);
+            autoLandlord(currentGamer);
         }
     }
 
@@ -134,10 +123,6 @@ public class GameManager implements Gamer.GamerListener{
                     card.index = Integer.valueOf(cardStrs[i]);
                     currentPlayCards.addCard(card);
                 }
-                // 第一张牌必须出
-                if (lastPlayGamer == null && currentPlayCards.count == 0) {
-                    return;
-                }
                 // 检查出牌是否合理
                 GameChecker.check(currentPlayCards);
                 if (currentPlayCards.type != TypeIllegal && GameChecker.compare(lastPlayCards, currentPlayCards)) {
@@ -148,14 +133,29 @@ public class GameManager implements Gamer.GamerListener{
                 }
             }
         }
+        // 统计有几次不要，如果有两次连续的不要，则新开一轮
+        if (currentPlayCards.count == 0) {
+            passCount++;
+            if (passCount == 2) {
+                lastPlayCards = null;
+            }
+        } else {
+            passCount = 0;
+        }
+        // 第一张牌必须出
+        if (lastPlayGamer == null && currentPlayCards.count == 0) {
+            return;
+        }
         // 群发消息
         if (lastPlayCards == null) {
             lastPlayCards = new Cards();
-        } else {
-            lastPlayCards.removeAllCards();
         }
-        lastPlayCards.addCards(currentPlayCards);
-        lastPlayCards.type = currentPlayCards.type;
+
+        if (currentPlayCards.count > 0) {
+            lastPlayCards.removeAllCards();
+            lastPlayCards.addCards(currentPlayCards);
+            lastPlayCards.type = currentPlayCards.type;
+        }
 
         for (Gamer gamer : gamers) {
             gamer.notifyInfo(str);
@@ -167,14 +167,40 @@ public class GameManager implements Gamer.GamerListener{
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 public void run() {
-                    handlePlayCard(generatePlayCard(currentGamer, currentGamer.cards.subCards(0, 1)));
+                    handlePlayCard(generatePlayCard(currentGamer, currentGamer.cards.subCards(0, 0)));
                 }
             }, 500);
         }
     }
 
     private void handlePassLandlord(String str) {
+        String[] strs = str.split("\\|");
+        if (strs.length == 2 && strs[1].equals(currentGamer.user.userId)) {
+            currentGamerIndex = (currentGamerIndex + 1) % 3;
+            currentGamer = gamers.get(currentGamerIndex);
+            for (Gamer gamer : gamers) {
+                gamer.notifyInfo(PASS_LANDLORD_OPERATION + "|" + currentGamer.user.userId);
+            }
+            if (currentGamer.isAuto) {
+                autoLandlord(currentGamer);
+            }
+        }
+    }
 
+    private void autoLandlord(Gamer gamer) {
+        Timer timer1 = new Timer();
+        timer1.schedule(new TimerTask() {
+            public void run() {
+                handleConfirmLandlord(generateConfirm(gamer));
+            }
+        }, 3000);
+
+        Timer timer2 = new Timer();
+        timer2.schedule(new TimerTask() {
+            public void run() {
+                handlePlayCard(generatePlayCard(gamer, gamer.cards.subCards(0, 1)));
+            }
+        }, 6000);
     }
 
     private String generateConfirm(Gamer gamer) {

@@ -31,9 +31,15 @@ public class SocketServer {
                 socket = serverSocket.accept();
                 System.out.println("user login");
 
-                GameManager gameManager = new GameManager();    // 创建一局
-                managers.add(gameManager);
+                GameManager gameManager;
+                if (managers.size() > 0 && managers.get(managers.size()-1).gamers.size() < 3) {
+                    gameManager = managers.get(managers.size()-1);
+                } else {
+                    gameManager = new GameManager();
+                    managers.add(gameManager);
+                }
 
+                managers.add(gameManager);
                 Gamer gamer = new Gamer();  // 创建玩家
                 gamer.socket = socket;
                 gameManager.addGamer(gamer);

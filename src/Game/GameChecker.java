@@ -15,10 +15,14 @@ public class GameChecker {
     }
 
     public static boolean compare(Cards lastCards, Cards currentCards) {
-        if (lastCards == null && currentCards.count > 0) {
+        if ((lastCards == null || lastCards.count == 0) && currentCards.count > 0) {
             return true;
         }
         if (currentCards.type == TypeKingBomb) {
+            return true;
+        } else if (currentCards.type == TypeNormalBomb &&
+                lastCards.type != TypeKingBomb &&
+                lastCards.type != TypeNormalBomb){
             return true;
         } else if (lastCards.type == currentCards.type){
             if (lastCards.count > 0 && currentCards.count > 0) {
@@ -116,7 +120,7 @@ public class GameChecker {
     private static boolean checkStraight(Cards cards) {
         if (cards.count >= 5) {
             for (int i=0; i<cards.count-1; i++) {
-                if (cards.get(i).number != cards.get(i+1).number - 1) {
+                if (cards.get(i).number != cards.get(i+1).number + 1) {
                     return false;
                 }
             }
@@ -130,7 +134,7 @@ public class GameChecker {
         if (cards.count >= 6 && cards.count % 2 == 0) {
             for (int i=0; i<cards.count; i=i+2) {
                 if (cards.get(i).number != cards.get(i+1).number ||
-                        (i < cards.count - 2 && cards.get(i).number != cards.get(i+2).number - 1)) {
+                        (i < cards.count - 3 && cards.get(i).number != cards.get(i+2).number + 1)) {
                     return false;
                 }
             }
@@ -144,7 +148,9 @@ public class GameChecker {
         if (cards.count >= 6) {
             int planeCount = 0;
             for (int i=0; i<=cards.count-3; i=i+3) {
-                if (cards.get(i).number == cards.get(i+1).number &&
+                if (i+1 < cards.count &&
+                        i+2 < cards.count &&
+                        cards.get(i).number == cards.get(i+1).number &&
                         cards.get(i).number == cards.get(i+2).number) {
                     planeCount++;
                 } else {
