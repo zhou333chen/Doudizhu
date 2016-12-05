@@ -15,7 +15,7 @@ public class GameManager implements Gamer.GamerListener{
     public ArrayList<Gamer> gamers = new ArrayList<>(3);
     ArrayList<Card> cards;
     Cards lastPlayCards;
-    Cards currentPlayCards = new Cards();
+    Cards currentPlayCards;
     Gamer lastPlayGamer;    // 上一个出牌的人
     Gamer currentGamer;
     int currentGamerIndex;
@@ -29,6 +29,13 @@ public class GameManager implements Gamer.GamerListener{
 
     private void startGame() {
         System.out.println("start game");
+        // 初始化
+        lastPlayCards = new Cards();
+        currentPlayCards = new Cards();
+        lastPlayGamer = null;
+        currentGamer = null;
+        currentGamerIndex = -1;
+        passCount = 0;
         // 洗牌
         currentGamer = gamers.get((int)(Math.random()*3));
         deal();
@@ -40,6 +47,9 @@ public class GameManager implements Gamer.GamerListener{
         for (int i=0;i<54;i++) {
             Card card = new Card();
             card.index = i+1;
+            if (card.index < 53) {
+                card.number = (card.index - 1)/ 4;
+            }
             cards.add(card);
         }
         Collections.shuffle(cards);
@@ -61,6 +71,7 @@ public class GameManager implements Gamer.GamerListener{
                 sb.append(card.index + "&");
                 gamer.cards.addCard(card);
             }
+            gamer.cards.sort();
             sb.deleteCharAt(sb.length()-1);
             gamer.notifyInfo(sb.toString());
         }
@@ -137,7 +148,7 @@ public class GameManager implements Gamer.GamerListener{
         if (currentPlayCards.count == 0) {
             passCount++;
             if (passCount == 2) {
-                lastPlayCards = null;
+                lastPlayCards.removeAllCards();
             }
         } else {
             passCount = 0;
@@ -145,10 +156,6 @@ public class GameManager implements Gamer.GamerListener{
         // 第一张牌必须出
         if (lastPlayGamer == null && currentPlayCards.count == 0) {
             return;
-        }
-        // 群发消息
-        if (lastPlayCards == null) {
-            lastPlayCards = new Cards();
         }
 
         if (currentPlayCards.count > 0) {
@@ -167,9 +174,9 @@ public class GameManager implements Gamer.GamerListener{
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 public void run() {
-                    handlePlayCard(generatePlayCard(currentGamer, currentGamer.cards.subCards(0, 0)));
+                    handlePlayCard(Robort.generatePlayCard(currentGamer, lastPlayCards));
                 }
-            }, 500);
+            }, 1000);
         }
     }
 
@@ -191,36 +198,15 @@ public class GameManager implements Gamer.GamerListener{
         Timer timer1 = new Timer();
         timer1.schedule(new TimerTask() {
             public void run() {
-                handleConfirmLandlord(generateConfirm(gamer));
+                handleConfirmLandlord(Robort.generateConfirm(gamer));
             }
         }, 3000);
 
         Timer timer2 = new Timer();
         timer2.schedule(new TimerTask() {
             public void run() {
-                handlePlayCard(generatePlayCard(gamer, gamer.cards.subCards(0, 1)));
+                handlePlayCard(Robort.generatePlayCard(gamer, null));
             }
         }, 6000);
-    }
-
-    private String generateConfirm(Gamer gamer) {
-        System.out.println("auto confirm");
-        return CONFIRM_OPERATION + "|" + gamer.user.userId;
-    }
-
-    private String generatePlayCard(Gamer gamer, List<Card> cards) {
-        System.out.println("auto play");
-        StringBuffer sb = new StringBuffer();
-        sb.append(PLAY_OPERATION + "|" + gamer.user.userId + "|");
-        for (Card card : cards) {
-            sb.append(card.index + "&");
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        return sb.toString();
-    }
-
-    private String generatePassLandlord(Gamer gamer) {
-        System.out.println("auto pass");
-        return "";
     }
 }

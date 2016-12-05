@@ -23,7 +23,7 @@ public class Cards {
     public final static int TypeSingle = 9;     // 单张
     public final static int TypeIllegal = 10;   // 不合法的牌
 
-    private ArrayList<Card> cardList;
+    public ArrayList<Card> cardList;
     public int type;
     public int count;
 
@@ -58,6 +58,7 @@ public class Cards {
     public void addCards(List<Card> cards) {
         cardList.addAll(cards);
         count += cards.size();
+        sort();
     }
 
     public void removeCard(Card card) {

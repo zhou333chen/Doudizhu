@@ -20,6 +20,6 @@ public class Card implements  Comparable{
     @Override
     public int compareTo(Object o) {
         Card card = (Card)o;
-        return this.index - card.index;
+        return card.index - this.index;
     }
 }
