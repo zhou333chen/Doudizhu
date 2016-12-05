@@ -25,7 +25,7 @@ public class GameChecker {
                 lastCards.type != TypeNormalBomb){
             return true;
         } else if (lastCards.type == currentCards.type){
-            if (lastCards.count > 0 && currentCards.count > 0) {
+            if (lastCards.count > 0 && currentCards.count > 0 && lastCards.count == currentCards.count) {
                 return currentCards.get(0).number > lastCards.get(0).number;
             } else {
                 return false;
@@ -95,8 +95,8 @@ public class GameChecker {
 
     private static boolean checkKingBomb(Cards cards) {
         if (cards.count == 2 &&
-                cards.get(0).index == 53 &&
-                cards.get(1).index == 54) {
+                cards.get(0).index == 54 &&
+                cards.get(1).index == 53) {
             cards.type = TypeKingBomb;
             return true;
         } else {

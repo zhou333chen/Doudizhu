@@ -52,7 +52,7 @@ public class GameManager implements Gamer.GamerListener{
             }
             cards.add(card);
         }
-        Collections.shuffle(cards);
+//        Collections.shuffle(cards);
         // 随机产生叫地主的人
         currentGamerIndex = (int)(Math.random() * 3);
         currentGamer = gamers.get(currentGamerIndex);
