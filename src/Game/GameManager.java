@@ -13,13 +13,15 @@ import static Model.Cards.TypeIllegal;
  */
 public class GameManager implements Gamer.GamerListener{
     public ArrayList<Gamer> gamers = new ArrayList<>(3);
-    ArrayList<Card> cards;
-    Cards lastPlayCards;
-    Cards currentPlayCards;
-    Gamer lastPlayGamer;    // 上一个出牌的人
-    Gamer currentGamer;
-    int currentGamerIndex;
-    int passCount;
+    private ArrayList<Card> cards;
+    private Cards lastPlayCards;
+    private Cards currentPlayCards;
+    private Gamer lastPlayGamer;    // 上一个出牌的人
+    private Gamer currentGamer;
+    private int currentGamerIndex;
+    private int passCount;
+    private TimerTask confirmLandlordTimerTask;
+    private TimerTask playTimerTask;
 
     public void addGamer(Gamer gamer) {
         gamers.add(gamer);
@@ -30,6 +32,12 @@ public class GameManager implements Gamer.GamerListener{
     private void startGame() {
         System.out.println("start game");
         // 初始化
+        if (confirmLandlordTimerTask != null) {
+            confirmLandlordTimerTask.cancel();
+        }
+        if (playTimerTask != null) {
+            playTimerTask.cancel();
+        }
         lastPlayCards = new Cards();
         currentPlayCards = new Cards();
         lastPlayGamer = null;
@@ -172,11 +180,13 @@ public class GameManager implements Gamer.GamerListener{
         currentGamer = gamers.get(currentGamerIndex);
         if (currentGamer.isAuto) {
             Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
+            playTimerTask = new TimerTask() {
+                @Override
                 public void run() {
                     handlePlayCard(Robort.generatePlayCard(currentGamer, lastPlayCards));
                 }
-            }, 1000);
+            };
+            timer.schedule(playTimerTask, 1000);
         }
     }
 
@@ -196,17 +206,22 @@ public class GameManager implements Gamer.GamerListener{
 
     private void autoLandlord(Gamer gamer) {
         Timer timer1 = new Timer();
-        timer1.schedule(new TimerTask() {
+        confirmLandlordTimerTask = new TimerTask() {
+            @Override
             public void run() {
                 handleConfirmLandlord(Robort.generateConfirm(gamer));
             }
-        }, 3000);
+        };
+        timer1.schedule(confirmLandlordTimerTask, 3000);
 
         Timer timer2 = new Timer();
-        timer2.schedule(new TimerTask() {
+        playTimerTask = new TimerTask() {
+            @Override
             public void run() {
                 handlePlayCard(Robort.generatePlayCard(gamer, null));
+
             }
-        }, 6000);
+        };
+        timer2.schedule(playTimerTask, 6000);
     }
 }

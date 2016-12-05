@@ -107,11 +107,7 @@ public class Robort {
                 if (cards.get(i).index < 49 && cards.get(i).number == stack.peek().number + 1) {
                     stack.push(cards.get(i));
                     if (stack.size() == compareCards.size()) {
-                        ArrayList<Card> result = new ArrayList<>();
-                        while (!stack.isEmpty()) {
-                            result.add(stack.pop());
-                        }
-                        return result;
+                        return stackToArrayList(stack);
                     }
                 } else if (cards.get(i).number > stack.peek().number + 1) {
                     stack.clear();
@@ -125,25 +121,22 @@ public class Robort {
 
     private static List<Card> findCompany(ArrayList<Card> cards, ArrayList<Card> compareCards) {
         Stack<Card> stack = new Stack<>();
-        int flag = 0;   // 0代表没有牌，1代表已经有一张牌了，2代表有两张相同的牌
+        int flag = 2;   // 0代表没有牌，1代表已经有一张牌了，2代表有两张相同的牌
         for (int i=cards.size()-1; i>=0; i--) {
+            if (cards.get(i).index >= 49) {
+                break;
+            }
             if (!stack.isEmpty()) {
-                if (cards.get(i).index < 49 &&
-                        cards.get(i).number == stack.peek().number + 1) {
+                if (cards.get(i).number == stack.peek().number + 1 && flag == 2) {
                     stack.push(cards.get(i));
-                    if (flag == 0 || flag == 2) {
-                        flag = 1;
-                    } else if (flag == 1) {
-                        flag = 2;
-                    }
+                    flag = 1;
+                } else if (cards.get(i).number == stack.peek().number && flag == 1) {
+                    stack.push(cards.get(i));
+                    flag = 2;
                     if (stack.size() == compareCards.size()) {
-                        ArrayList<Card> result = new ArrayList<>();
-                        while (!stack.isEmpty()) {
-                            result.add(stack.pop());
-                        }
-                        return result;
+                        return stackToArrayList(stack);
                     }
-                } else if (cards.get(i).number > stack.peek().number + 1) {
+                } else {
                     stack.clear();
                 }
             } else if (cards.get(i).number > compareCards.get(compareCards.size()-1).number){
@@ -171,5 +164,13 @@ public class Robort {
 
     private static List<Card> findSingle(ArrayList<Card> cards, ArrayList<Card> compareCards) {
         return null;
+    }
+
+    private static ArrayList<Card> stackToArrayList(Stack<Card> stack) {
+        ArrayList<Card> result = new ArrayList<>();
+        while (!stack.isEmpty()) {
+            result.add(stack.pop());
+        }
+        return result;
     }
 }
