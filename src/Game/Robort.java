@@ -320,10 +320,21 @@ public class Robort {
     }
 
     private static List<Card> findDouble(ArrayList<Card> cards, ArrayList<Card> compareCards) {
+        for (int i=cards.size()-1; i>=1; i--) {
+            if (cards.get(i).number == cards.get(i-1).number &&
+                    cards.get(i).number > compareCards.get(0).number) {
+                return cards.subList(i-1, i+1);
+            }
+        }
         return null;
     }
 
     private static List<Card> findSingle(ArrayList<Card> cards, ArrayList<Card> compareCards) {
+        for (int i=cards.size()-1; i>=0; i--) {
+            if (cards.get(i).number > compareCards.get(0).number) {
+                return cards.subList(i, i+1);
+            }
+        }
         return null;
     }
 
