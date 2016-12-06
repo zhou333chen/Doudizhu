@@ -146,9 +146,6 @@ public class GameManager implements Gamer.GamerListener{
                 GameChecker.check(currentPlayCards);
                 if (currentPlayCards.type != TypeIllegal && GameChecker.compare(lastPlayCards, currentPlayCards)) {
                     currentGamer.cards.removeAllCards(currentPlayCards);
-                    if (currentGamer.cards.count == 0) {
-                        return;
-                    }
                 } else {
                     currentGamer.notifyInfo(ILLEGAL_OPERATION + "|" + currentGamer.user.userId);
                     return;
@@ -181,6 +178,9 @@ public class GameManager implements Gamer.GamerListener{
 
         for (Gamer gamer : gamers) {
             gamer.notifyInfo(str);
+        }
+        if (currentGamer.cards.count == 0) {
+            return;
         }
         currentGamerIndex = (currentGamerIndex + 1) % 3;
         lastPlayGamer = currentGamer;
