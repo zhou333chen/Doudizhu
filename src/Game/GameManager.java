@@ -146,6 +146,9 @@ public class GameManager implements Gamer.GamerListener{
                 GameChecker.check(currentPlayCards);
                 if (currentPlayCards.type != TypeIllegal && GameChecker.compare(lastPlayCards, currentPlayCards)) {
                     currentGamer.cards.removeAllCards(currentPlayCards);
+                    if (currentGamer.cards.count == 0) {
+                        return;
+                    }
                 } else {
                     currentGamer.notifyInfo(ILLEGAL_OPERATION + "|" + currentGamer.user.userId);
                     return;
@@ -153,6 +156,10 @@ public class GameManager implements Gamer.GamerListener{
             }
         }
         // 统计有几次不要，如果有两次连续的不要，则新开一轮
+        if (passCount == 2 && currentPlayCards.count == 0) {
+            currentGamer.notifyInfo(ILLEGAL_OPERATION + "|" + currentGamer.user.userId);
+            return;
+        }
         if (currentPlayCards.count == 0) {
             passCount++;
             if (passCount == 2) {
