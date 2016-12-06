@@ -219,7 +219,7 @@ public class Robort {
 
     private static List<Card> findFour(ArrayList<Card> cards, ArrayList<Card> compareCards) {
         HashSet<Integer> cardNumbers = new HashSet<>();
-        for (int i=cards.size()-1; i>=2; i--) {
+        for (int i=cards.size()-1; i>=3; i--) {
             if (cards.get(i).number >= 49) {
                 break;
             }
@@ -268,6 +268,54 @@ public class Robort {
     }
 
     private static List<Card> findThree(ArrayList<Card> cards, ArrayList<Card> compareCards) {
+        HashSet<Integer> cardNumbers = new HashSet<>();
+        int lastPlaneNumber = -1;
+        for (int i=cards.size()-1; i>=2; i--) {
+            if (cards.get(i).number >= 49) {
+                break;
+            }
+            // find body
+            if (cards.get(i).number == cards.get(i-1).number &&
+                    cards.get(i).number == cards.get(i-2).number) {
+                ArrayList<Card> result = new ArrayList<>();
+                for (int j=2; j>=0; j--) {
+                    Card card = cards.get(i-j);
+                    if (!cardNumbers.contains(card.number)) {
+                        cardNumbers.add(card.number);
+                    }
+                    result.add(card);
+                }
+                // find wings
+                List<Card> wings;
+                int wingsCount = 0;
+                int indexDelta = 0;
+                if (compareCards.size() == 3) {
+
+                } else if (compareCards.size() == 4) {
+                    wings = findOneCard(cards);
+                    for (int j=wings.size()-1; j>=0 && wingsCount<1; j--) {
+                        if (!cardNumbers.contains(wings.get(j).number)) {
+                            result.add(result.size()-indexDelta, wings.get(j));
+                            wingsCount++;
+                            indexDelta++;
+                        }
+                    }
+                } else if (compareCards.size() == 5) {
+                    wings = findTwoCard(cards);
+                    for (int j=wings.size()-1; j>=1 && wingsCount<1; j=j-2) {
+                        if (!cardNumbers.contains(wings.get(j).number)) {
+                            result.add(result.size()-indexDelta, wings.get(j));
+                            result.add(result.size()-indexDelta, wings.get(j-1));
+                            wingsCount++;
+                            indexDelta += 2;
+                        }
+                    }
+                }
+                if (result.size() == compareCards.size()) {
+                    return result;
+                }
+            }
+        }
         return null;
     }
 
