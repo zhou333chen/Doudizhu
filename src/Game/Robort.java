@@ -136,11 +136,12 @@ public class Robort {
                     if (stack.size() == compareCards.size()) {
                         return stackToArrayList(stack);
                     }
-                } else {
+                } else if (cards.get(i).number > stack.peek().number && flag == 1){
                     stack.clear();
                 }
             } else if (cards.get(i).number > compareCards.get(compareCards.size()-1).number){
                 stack.push(cards.get(i));
+                flag = 1;
             }
         }
         return null;
