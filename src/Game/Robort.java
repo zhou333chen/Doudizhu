@@ -148,10 +148,122 @@ public class Robort {
     }
 
     private static List<Card> findPlane(ArrayList<Card> cards, ArrayList<Card> compareCards) {
+        int comparePlaneCount = 0;
+        for (int i=0; i<compareCards.size()-2; i=i+3) {
+            if (compareCards.get(i).number == compareCards.get(i+1).number &&
+                    compareCards.get(i).number == compareCards.get(i+2).number) {
+                comparePlaneCount++;
+            } else {
+                break;
+            }
+        }
+        int planeCount = 0;
+        HashSet<Integer> cardNumbers = new HashSet<>();
+        int lastPlaneNumber = -1;
+        for (int i=cards.size()-1; i>=2; i--) {
+            if (cards.get(i).number >= 49) {
+                break;
+            }
+            // find body
+            if (cards.get(i).number == cards.get(i-1).number &&
+                    cards.get(i).number == cards.get(i-2).number) {
+                lastPlaneNumber = cards.get(i).number;
+                planeCount++;
+                i -= 2;
+                if (planeCount == comparePlaneCount) {
+                    ArrayList<Card> result = new ArrayList<>();
+                    for (int j=0; j<planeCount*3; j++) {
+                        Card card = cards.get(i+j);
+                        if (!cardNumbers.contains(card.number)) {
+                            cardNumbers.add(card.number);
+                        }
+                        result.add(card);
+                    }
+                    // find wings
+                    List<Card> wings;
+                    int wingsCount = 0;
+                    int indexDelta = 0;
+                    if ((compareCards.size() - comparePlaneCount * 3) / comparePlaneCount == 0) {
+
+                    } else if ((compareCards.size() - comparePlaneCount * 3) / comparePlaneCount == 1) {
+                        wings = findOneCard(cards);
+                        for (int j=wings.size()-1; j>=0 && wingsCount<comparePlaneCount; j--) {
+                            if (!cardNumbers.contains(wings.get(j).number)) {
+                                result.add(result.size()-indexDelta, wings.get(j));
+                                wingsCount++;
+                                indexDelta++;
+                            }
+                        }
+                    } else if ((compareCards.size() - comparePlaneCount * 3) / comparePlaneCount == 2) {
+                        wings = findTwoCard(cards);
+                        for (int j=wings.size()-1; j>=1 && wingsCount<comparePlaneCount; j=j-2) {
+                            if (!cardNumbers.contains(wings.get(j).number)) {
+                                result.add(result.size()-indexDelta, wings.get(j));
+                                result.add(result.size()-indexDelta, wings.get(j-1));
+                                wingsCount++;
+                                indexDelta += 2;
+                            }
+                        }
+                    }
+                    if (result.size() == compareCards.size()) {
+                        return result;
+                    }
+                }
+            } else if (lastPlaneNumber == -1 || cards.get(i).number > lastPlaneNumber + 1){
+                planeCount = 0;
+                lastPlaneNumber = -1;
+            }
+        }
         return null;
     }
 
     private static List<Card> findFour(ArrayList<Card> cards, ArrayList<Card> compareCards) {
+        HashSet<Integer> cardNumbers = new HashSet<>();
+        for (int i=cards.size()-1; i>=2; i--) {
+            if (cards.get(i).number >= 49) {
+                break;
+            }
+            // find body
+            if (cards.get(i).number == cards.get(i-1).number &&
+                    cards.get(i).number == cards.get(i-2).number &&
+                    cards.get(i).number == cards.get(i-3).number) {
+                ArrayList<Card> result = new ArrayList<>();
+                for (int j=3; j>=0; j--) {
+                    Card card = cards.get(i-j);
+                    if (!cardNumbers.contains(card.number)) {
+                        cardNumbers.add(card.number);
+                    }
+                    result.add(card);
+                }
+                // find wings
+                List<Card> wings;
+                int wingsCount = 0;
+                int indexDelta = 0;
+                if (compareCards.size() == 6) {
+                    wings = findOneCard(cards);
+                    for (int j=wings.size()-1; j>=0 && wingsCount<2; j--) {
+                        if (!cardNumbers.contains(wings.get(j).number)) {
+                            result.add(result.size()-indexDelta, wings.get(j));
+                            wingsCount++;
+                            indexDelta++;
+                        }
+                    }
+                } else if (compareCards.size() == 8) {
+                    wings = findTwoCard(cards);
+                    for (int j=wings.size()-1; j>=1 && wingsCount<2; j=j-2) {
+                        if (!cardNumbers.contains(wings.get(j).number)) {
+                            result.add(result.size()-indexDelta, wings.get(j));
+                            result.add(result.size()-indexDelta, wings.get(j-1));
+                            wingsCount++;
+                            indexDelta += 2;
+                        }
+                    }
+                }
+                if (result.size() == compareCards.size()) {
+                    return result;
+                }
+            }
+        }
         return null;
     }
 
@@ -165,6 +277,35 @@ public class Robort {
 
     private static List<Card> findSingle(ArrayList<Card> cards, ArrayList<Card> compareCards) {
         return null;
+    }
+
+    private static List<Card> findTwoCard(ArrayList<Card> cards) {
+        HashSet<Integer> set = new HashSet<>();
+        ArrayList<Card> result = new ArrayList<>();
+        for (int i=0; i<cards.size()-1; i++) {
+            if (set.contains(cards.get(i).number)) {
+                continue;
+            }
+            if (cards.get(i).number == cards.get(i+1).number) {
+                set.add(cards.get(i).number);
+                result.add(cards.get(i));
+                result.add(cards.get(i+1));
+            }
+        }
+        return result;
+    }
+
+    private static List<Card> findOneCard(ArrayList<Card> cards) {
+        HashSet<Integer> set = new HashSet<>();
+        ArrayList<Card> result = new ArrayList<>();
+        for (int i=0; i<cards.size()-1; i++) {
+            if (set.contains(cards.get(i).number)) {
+                continue;
+            }
+            set.add(cards.get(i).number);
+            result.add(cards.get(i));
+        }
+        return result;
     }
 
     private static ArrayList<Card> stackToArrayList(Stack<Card> stack) {
