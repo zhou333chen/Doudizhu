@@ -39,12 +39,6 @@ public class GameChecker {
         if (cards == null) {
             return;
         }
-        for (int i=0; i<cards.count; i++) {
-            Card card = cards.get(i);
-            if (card.number < 53) {
-                card.number = (card.index - 1)/ 4;
-            }
-        }
         if (checkKingBomb(cards) ||
                 checkNormalBomb(cards) ||
                 checkStraight(cards) ||
@@ -95,8 +89,8 @@ public class GameChecker {
 
     private static boolean checkKingBomb(Cards cards) {
         if (cards.count == 2 &&
-                cards.get(0).index == 54 &&
-                cards.get(1).index == 53) {
+                cards.get(0).getIndex() == 54 &&
+                cards.get(1).getIndex() == 53) {
             cards.type = TypeKingBomb;
             return true;
         } else {

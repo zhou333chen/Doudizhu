@@ -69,7 +69,7 @@ public class Robort {
         sb.append(PLAY_OPERATION + "|" + gamer.user.userId + "|");
         if (cards != null) {
             for (Card card : cards) {
-                sb.append(card.index + "&");
+                sb.append(card.getIndex() + "&");
             }
         }
         sb.deleteCharAt(sb.length() - 1);
@@ -104,7 +104,7 @@ public class Robort {
         Stack<Card> stack = new Stack<>();
         for (int i=cards.size()-1; i>=0; i--) {
             if (!stack.isEmpty()) {
-                if (cards.get(i).index < 49 && cards.get(i).number == stack.peek().number + 1) {
+                if (cards.get(i).getIndex() < 49 && cards.get(i).number == stack.peek().number + 1) {
                     stack.push(cards.get(i));
                     if (stack.size() == compareCards.size()) {
                         return stackToArrayList(stack);
@@ -123,7 +123,7 @@ public class Robort {
         Stack<Card> stack = new Stack<>();
         int flag = 2;   // 0代表没有牌，1代表已经有一张牌了，2代表有两张相同的牌
         for (int i=cards.size()-1; i>=0; i--) {
-            if (cards.get(i).index >= 49) {
+            if (cards.get(i).getIndex() >= 49) {
                 break;
             }
             if (!stack.isEmpty()) {
@@ -166,7 +166,8 @@ public class Robort {
             }
             // find body
             if (cards.get(i).number == cards.get(i-1).number &&
-                    cards.get(i).number == cards.get(i-2).number) {
+                    cards.get(i).number == cards.get(i-2).number &&
+                    cards.get(i).number > compareCards.get(3*planeCount).number) {
                 lastPlaneNumber = cards.get(i).number;
                 planeCount++;
                 i -= 2;
@@ -226,7 +227,8 @@ public class Robort {
             // find body
             if (cards.get(i).number == cards.get(i-1).number &&
                     cards.get(i).number == cards.get(i-2).number &&
-                    cards.get(i).number == cards.get(i-3).number) {
+                    cards.get(i).number == cards.get(i-3).number &&
+                    cards.get(i).number > compareCards.get(0).number) {
                 ArrayList<Card> result = new ArrayList<>();
                 for (int j=3; j>=0; j--) {
                     Card card = cards.get(i-j);
@@ -276,7 +278,8 @@ public class Robort {
             }
             // find body
             if (cards.get(i).number == cards.get(i-1).number &&
-                    cards.get(i).number == cards.get(i-2).number) {
+                    cards.get(i).number == cards.get(i-2).number &&
+                    cards.get(i).number > compareCards.get(0).number) {
                 ArrayList<Card> result = new ArrayList<>();
                 for (int j=2; j>=0; j--) {
                     Card card = cards.get(i-j);

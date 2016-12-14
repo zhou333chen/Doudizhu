@@ -7,6 +7,7 @@ import java.util.*;
 
 import static Game.GameOperation.*;
 import static Model.Cards.TypeIllegal;
+import static Model.Cards.TypeNormal;
 
 /**
  * Created by jintiandalegehu on 2016/11/27.
@@ -54,10 +55,7 @@ public class GameManager implements Gamer.GamerListener{
         cards = new ArrayList<>();
         for (int i=0;i<54;i++) {
             Card card = new Card();
-            card.index = i+1;
-            if (card.index < 53) {
-                card.number = (card.index - 1)/ 4;
-            }
+            card.setIndex(i+1);
             cards.add(card);
         }
         Collections.shuffle(cards);
@@ -76,7 +74,7 @@ public class GameManager implements Gamer.GamerListener{
             sb.append(currentGamer.user.userId + "|");
             for (int j=0; j<17; j++) {
                 Card card = cards.get(i * 17 + j);
-                sb.append(card.index + "&");
+                sb.append(card.getIndex() + "&");
                 gamer.cards.addCard(card);
             }
             gamer.cards.sort();
@@ -121,9 +119,9 @@ public class GameManager implements Gamer.GamerListener{
                 currentGamer.cards.addCards(bottomCards);
                 for (Gamer gamer : gamers) {
                     gamer.notifyInfo(str + "|" +
-                            bottomCards.get(0).index + "&" +
-                            bottomCards.get(1).index + "&" +
-                            bottomCards.get(2).index);
+                            bottomCards.get(0).getIndex() + "&" +
+                            bottomCards.get(1).getIndex() + "&" +
+                            bottomCards.get(2).getIndex());
                 }
             }
         }
@@ -139,7 +137,7 @@ public class GameManager implements Gamer.GamerListener{
                 String[] cardStrs = strs[2].split("&");
                 for (int i=0; i<cardStrs.length; i++) {
                     Card card = new Card();
-                    card.index = Integer.valueOf(cardStrs[i]);
+                    card.setIndex(Integer.valueOf(cardStrs[i]));
                     currentPlayCards.addCard(card);
                 }
                 // 检查出牌是否合理
@@ -147,6 +145,7 @@ public class GameManager implements Gamer.GamerListener{
                 if (currentPlayCards.type != TypeIllegal && GameChecker.compare(lastPlayCards, currentPlayCards)) {
                     currentGamer.cards.removeAllCards(currentPlayCards);
                 } else {
+                    System.out.println("非法操作");
                     currentGamer.notifyInfo(ILLEGAL_OPERATION + "|" + currentGamer.user.userId);
                     return;
                 }
